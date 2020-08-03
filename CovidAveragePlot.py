@@ -156,6 +156,7 @@ def main():
     # save file if necessary
     if not plot_chart:
         with open('states.csv', 'w') as f:
+            f.write('{},{},{},{}\n'.format('date', 'state', 'daily_positive_cases_in_million', 'daily_positive_rate'))
             for line in lines:
                 f.write(line + "\n")
 
