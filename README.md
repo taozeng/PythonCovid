@@ -8,4 +8,6 @@ be removed from the restricted list.
 
 I can not find such charts online, so I decided to make them by myself.
 
+See an example chart for [Washington State](https://htmlpreview.github.io/?https://github.com/taozeng/PythonCovid/blob/master/WA.html).
+
 Data are pulling from JHU's [Covid19 Tracking project](https://coronavirus.jhu.edu/)
