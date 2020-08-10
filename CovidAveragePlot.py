@@ -65,39 +65,41 @@ def show_data(x, cases, avg_cases, pcts, avg_pcts, state, state_name, population
 
 def process_data(data, number_rolling_day, number_day_shown):
     date = []
-    new_cases, avg_cases = [], []
-    pos_pct, avg_pct = [], []
+    pos_cases, total_cases, pos_pct = [], [], []
+    avg_pos_cases, avg_pos_pct = [], []
     # get all columns we need
     for daily in data:
         date.insert(0, daily.get('date'))
         # get data for the day
         posInc = daily.get('positiveIncrease', 0)
-        totalInc = daily.get('totalTestResultsIncrease', 1)
-        # fix zero value
-        totalInc = 1 if totalInc == 0 else totalInc
-        new_cases.insert(0, posInc)
-        pos_pct.insert(0, posInc / totalInc * 100.0)
+        totalInc = daily.get('totalTestResultsIncrease', 0)
+        pos_cases.insert(0, posInc)
+        total_cases.insert(0, totalInc)
+        pos_pct.insert(0, posInc / totalInc * 100 if totalInc != 0 else 0)
     # calculate rolling average
-    sum_cases = 0
-    sum_pct = 0
+    sum_pos = 0
+    sum_tot = 0
     for i in range(len(date)):
-        sum_cases += new_cases[i]
-        sum_pct += pos_pct[i]
-        if i < number_rolling_day:
-            avg_cases.append(0)
-            avg_pct.append(0)
+        sum_pos += pos_cases[i]
+        sum_tot += total_cases[i]
+        if i < number_rolling_day - 1:
+            avg_pos_cases.append(0)
+            avg_pos_pct.append(0)
+        elif i == number_rolling_day - 1:
+            avg_pos_cases.append(sum_pos / number_rolling_day)
+            avg_pos_pct.append(sum_pos / sum_tot * 100 if sum_tot != 0 else 0)
         else:
-            sum_cases -= new_cases[i - number_rolling_day]
-            avg_cases.append(sum_cases / number_rolling_day)
-            sum_pct -= pos_pct[i - number_rolling_day]
-            avg_pct.append(sum_pct / number_rolling_day)
+            sum_pos -= pos_cases[i - number_rolling_day]
+            avg_pos_cases.append(sum_pos / number_rolling_day)
+            sum_tot -= total_cases[i - number_rolling_day]
+            avg_pos_pct.append(sum_pos / sum_tot * 100 if sum_tot != 0 else 0)
     # fix date format
     for i in range(len(date)):
         start = str(date[i])
         date[i] = start[:4] + "-" + start[4:6] + "-" + start[6:]
     # return results
     start = 0 - number_day_shown
-    return date[start:], new_cases[start:], avg_cases[start:], pos_pct[start:], avg_pct[start:]
+    return date[start:], pos_cases[start:], avg_pos_cases[start:], pos_pct[start:], avg_pos_pct[start:]
 
 
 def main():
